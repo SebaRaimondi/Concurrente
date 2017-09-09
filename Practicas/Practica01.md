@@ -51,13 +51,21 @@
 			alta: semaphoro := 4;
 			baja: semaphoro := 5;
 
-		Process Usuario-Alta [I:1..L]::				Process Usuario-Baja [I:1..K]::
-			{ 	P (sem);								{ 	P (sem);
-				P (alta);									P (baja);
-				//usa la BD									//usa la BD
-				V(sem);										V(sem);
-				V(alta);									V(baja);
-			}											}
+		Process Usuario-Alta [I:1..L]::				
+			{ 	P (sem);								
+				P (alta);									
+				//usa la BD									
+				V(sem);										
+				V(alta);									
+			}											
+
+		Process Usuario-Baja [I:1..K]::
+			{ 	P (sem);
+				P (baja);
+				//usa la BD
+				V(sem);
+				V(baja);
+			}
 
 	No es la forma correcta de declarar semaforos, se declaran con "sem nombreDeSemaforo = valorInicial"
 	Se tiene que hacer P(sem) luego del P(alta/baja), ya que sino podrian pasar el P(sem) 6 prio baja, 
@@ -67,7 +75,7 @@
 ### 4. 	Se tiene un curso con 40 alumnos, la maestra entrega una tarea distinta a cada alumno, luego cada alumno realiza su tarea y se la entrega a la maestra para que la corrija, esta revisa la tarea y si está bien le avisa al alumno que puede irse, si la tarea está mal le indica los errores, el alumno corregirá esos errores y volverá a entregarle la tarea a la maestra para que realice la corrección nuevamente, esto se repite hasta que la tarea no tenga errores.
 
 	Var
-		cola porCorregir				#Asumo que encolar y desencolar son atomicas, sino agregaria un semaforo.
+		cola porCorregir	#Asumo que encolar y desencolar son atomicas, sino agregaria un semaforo.
 		int seFueron = 0
 		sem entregados = 0
 		array[1..40] tareaPara of sem = 0
@@ -94,7 +102,7 @@
 				puedoIrme[alumnoActual] = true 
 				seFueron++
 			endif
-			V(corregido[alumnoActual])		# Le aviso al alumnoActual que ya corregi su trabajo.
+			V(corregido[alumnoActual])	# Le aviso al alumnoActual que ya corregi su trabajo.
 		}
 	}
 
