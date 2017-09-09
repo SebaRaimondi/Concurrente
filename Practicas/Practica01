@@ -5,7 +5,7 @@
 	b. 	Modifique su solución para el caso que haya tres detectores.
 
 a.
-	sem semaforo = 1
+	sem libres = 1
 	Process Detector[1..N]::
 	{	llega una persona.
 		P(semaforo)
@@ -15,3 +15,11 @@ a.
 	}
 
 b.
+	sem libres = 3
+	Process Detector[1..N]::
+	{	llega una persona.
+		P(semaforo)
+		pasa una persona.
+		V(semaforo)
+		ingresa al avion o le sacan la bomba.
+	}
