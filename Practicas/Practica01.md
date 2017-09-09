@@ -286,3 +286,72 @@
 		}
 	}
 
+
+### 10.En un curso hay dos profesores que toman examen en forma oral, el profesor A llama a los alumnos de acuerdo al orden de llegada, mientras que el profesor B llama a cualquier alumno (que haya llegado). Existen N alumnos que llegan y se quedan esperando hasta ser llamados para rendir, luego de que uno de los dos profesores lo atiende, se va. Indicar si la siguiente solución realizada con semáforo resuelve lo pedido. Justificar la respuesta. 
+
+	Var
+		string estado[N] = ([N], “Esperando” )
+		queue colaA, colaB
+		sem llegoA, llegoB = 0
+		sem esperando[N] = ([N], 0)
+		sem mutex[N] = ([N], 1)
+		sem mutexA, mutexB = 1
+	Profesor A::
+	{	int idAlumno
+		while (true)
+		{	P(llegoA)
+			P(mutexA)
+			idAlumno = pop(colaA)
+			V(mutexA)
+			P(mutex[idAlumno])
+			If (estado[idAlumno] = =“Esperando”)
+				estado[idAlumno] = “A”
+				V(mutex[idAlumno])
+				V(esperando[idAlumno])
+				//Se toma el examen//
+				V(esperando[idAlumno])
+			else
+				V(mutex[idAlumno])
+		}
+	}
+	Profesor B::
+	{	int idAlumno
+		while (true)
+		{	P(llegoB)
+			P(mutexB)
+			idAlumno = popAleatorio(colaB)
+			V(mutex(B))
+			P(mutex[idAlumno])
+			If (estado[idAlumno] == “Esperando”)
+				estado[idAlumno] = “B”
+				V(mutex[idAlumno])
+				V(esperando[idAlumno])
+				//Se toma el examen//
+				V(esperando[idAlumno])
+			else
+				V(mutex[idAlumno])
+		}
+	}
+	Alumno[i: 1..N]
+	{	P(mutexA)
+		push(colaA, i)
+		V(mutexA)
+		P(mutexB)
+		push(colaB, i)
+		V(mutexB)
+		P(esperando[i])
+		if (estado[i] == “A”)
+			//Interactúa con el Prof A//
+		else
+			//Interactua con el Prof B//
+		P(esperando[i])
+	}
+
+	El proceso de los profesores nunca terminan
+	Los alumnos no hacen V(llegoA) ni V(llegoB)
+	Ambos profesores deberian usar la misma cola, accediendola de forma diferente.
+
+
+### 11.Resolver el funcionamiento en una empresa de genética. Hay N clientes que sucesivamente envían secuencias de ADN a la empresa para que sean analizadas y esperan los resultados para poder envían otra secuencia a analizar. Para resolver estos análisis la empresa cuenta con 2 servidores que van alternando su uso para no exigirlos de más (en todo momento uno está trabajando y los otros dos descansando); cada 8 horas cambia en servidor con el que se trabaja. El servidor que está trabajando, toma un pedido (de a uno de acuerdo al orden de llegada de los mismos), lo resuelve y devuelve el resultado al cliente correspondiente; si al terminar ya han pasado las 8 horas despierta al próximo servidor y él descansa, sino continúa con el siguiente pedido.
+
+
