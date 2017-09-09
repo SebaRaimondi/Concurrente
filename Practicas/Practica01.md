@@ -354,4 +354,32 @@
 
 ### 11.Resolver el funcionamiento en una empresa de genética. Hay N clientes que sucesivamente envían secuencias de ADN a la empresa para que sean analizadas y esperan los resultados para poder envían otra secuencia a analizar. Para resolver estos análisis la empresa cuenta con 2 servidores que van alternando su uso para no exigirlos de más (en todo momento uno está trabajando y los otros dos descansando); cada 8 horas cambia en servidor con el que se trabaja. El servidor que está trabajando, toma un pedido (de a uno de acuerdo al orden de llegada de los mismos), lo resuelve y devuelve el resultado al cliente correspondiente; si al terminar ya han pasado las 8 horas despierta al próximo servidor y él descansa, sino continúa con el siguiente pedido.
 
-
+	Var
+		sem sCola = 1
+		queue cola
+		sem porAnalizar = 0
+		array[1..N] analisis of sem = 0
+	Process Cliente[c = 1..N]::
+	{	while (true) {
+			P(sCola)
+			cola.encolar(c)
+			V(porAnalizar)
+			V(sCola)
+			P(analisis[c])
+		}
+	}
+	Process Servidor[s = 1..3]
+	{	while (true) {
+			P(sServidor)
+			while (quedaTiempo) {
+				P(porAnalizar)
+				P(sCola)
+				actual = cola.desencolar()
+				V(sCola)
+				analizar(actual)
+				V(analisis[actual])
+			}
+			V(sServidor)
+			descansar()
+		}
+	}
