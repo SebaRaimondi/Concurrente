@@ -8,9 +8,9 @@
 		sem libres = 1
 	Process Detector[i = 1..N]::
 	{	llega una persona.
-		P(semaforo)
+		P(libres)
 		pasa una persona.
-		V(semaforo)
+		V(libres)
 		ingresa al avion o le sacan la bomba.
 	}
 
@@ -21,9 +21,9 @@
 		sem libres = 3
 	Process Detector[i = 1..N]::
 	{	llega una persona.
-		P(semaforo)
+		P(libres)
 		pasa una persona.
-		V(semaforo)
+		V(libres)
 		ingresa al avion o le sacan la bomba.
 	}
 
@@ -35,9 +35,13 @@
 		sem colaLibre = 1
 	Process Operativo[i = 1..N]::
 	{	P(instLibres)
+		P(colaLibre)
 		recurso = cola.desencolar			# Necesito semaforo para usar la cola???
+		V(colaLibre)
 		el proceso usa la instancia del recurso.
+		P(colaLibre)
 		cola.encolar(recurso)				# Necesito semaforo para usar la cola???
+		V(colaLibre)
 		V(instLibres)
 	}
 
@@ -76,18 +80,24 @@
 
 	Var
 		cola porCorregir    #Asumo que encolar y desencolar son atomicas, sino agregaria un semaforo.
+		sem	sCola = 1
 		int seFueron = 0
-		sem entregados = 0
+		sem sEntregados = 1
+		int entregados = 0
 		array[1..40] tareaPara of sem = 0
-		array[1..40] corregido of sem = 1
+		array[1..40] corregido of sem = 0
 		array[1..40] puedoIrme of boolean = false
 
 	Process Alumno[i = 1..40]::
 	{	P(tareaPara[i])				# Espero a que la maestra me de la tarea.
 		while(!puedoIrme[i]) {
 			hago mi tarea
+			P(sCola)
 			porCorregir.encolar(i)		# Le entrego mi tarea a la maestra para que la corrija.
-			V(entregados)			# Aviso que hay una tarea entregada mas.
+			V(sCola)
+			P(sEntregados)
+			entregados++
+			V(sEntregados)
 			P(corregido[i])			# Espero hasta que mi tarea haya sido corregida.
 		}
 	}
@@ -96,7 +106,9 @@
 	{	for i = 1 to 40 do V(tareaPara[i])	# Le doy a los su tarea a cada alumno.
 		while (seFueron < 40) {
 			P(entregados)			# Espero hasta que haya algun entregado.
+			P(sCola)
 			alumnoActual = porCorregir.desencolar()		# Agarro de la cola una tarea.
+			V(sCola)
 			Corrijo la tarea del alumnoActual
 			if laTareaEstabaBien then 
 				puedoIrme[alumnoActual] = true 
@@ -111,41 +123,53 @@
 ### Nota: Para elegir la tarea suponga que existe una función elegir que le asigna una tarea a un alumno (esta función asignará 10 tareas diferentes entre 50 alumnos, es decir, que 5 alumnos tendrán la tarea 1, otros 5 la tarea 2 y así sucesivamente para las 10 tareas).
 
 	Var
-		sem eligieron = 0		    # max 50
-		sem tareasPorAtender = 0	    # max 10
-		array[1..10] orden of int	    # orden en el que termino cada una de las 10 tareas.
-		array[1..10] termine of sem = 0	    # max 5, cantidad de alumnos que termino cada tarea.
-		array[1..10] semOrden of sem = 0    # indica cuando el profesor asigno el orden para mi tarea.
-		array[1..50] arranquen of sem = 0   # las posiciones seran 1 cuando todos 
-						    # los alumnos elijan tarea.
+		int eligieron = 0
+		sem sEligieron = 0
+		sem tareasPorAtender = 0
+		array[1..10] orden of int
+		array[1..10] termine of int = 0
+		array[1..10] sTermine of sem = 1
+		array[1..10] semOrden of sem = 0
+		array[1..50] arranquen of sem = 0
 	
 	Process Alumno[i = 1..50]:: 
-	{	tarea = elegirTarea()		# Cada alumno elije su tarea.
-		V(eligieron)			# Aumento la cantidad de alumnos que ya eligieron.
+	{	tarea = elegirTarea()
+
+		P(sEligieron)
+		eligieron++
 		if (eligieron == 50) then for i = 1 to 50 do V(arranquen[i]) 
-		# Si eligieron 50, digo que se puede arrancar. Aca tengo que poner semaforo no?
-		P(arranquen[i])			# Espero a que pueda arrancar.
-		Realizo mi tarea.					
-		V(termine[tarea])		# Aumento la cantidad que termino la tarea que tengo asignada.
-		if (termine[tarea] == 5) then 	# Si terminamos 5 de mi tarea: Semaforo???
-			cola.encolar(tarea)	# Encolo la tarea que tengo asignada.
-			V(tareasPorAtender)	# Aumento que hay una mas para atender.
+		V(sElegieron)
+
+		P(arranquen[i])
+		Realizo mi tarea.
+
+		P(sTermine[tarea])
+		termine[tarea]++
+		if (termine[tarea] == 5) then
+
+			P(sCola)
+			cola.encolar(tarea)
+			V(sCola)
+
+			V(tareasPorAtender)
 		endif
-		P(semOrden[tarea])		# Espero a que se le asigne un orden a mi tarea.
-		mirarMiOrden(orden[tarea])	# Veo que orden se me asigno.
-		Me voy.				# Bai.
+		V(sTermine[tarea])
+
+		P(semOrden[tarea])
+		mirarMiOrden(orden[tarea])
+		Me voy.
 	}
 
 	Process Profesor::
 	{	for tareasAtendidas = 1 to 10 do {
 			P(tareasPorAtender)
+			
+			P(sCola)
 			tareaActual = cola.desencolar()
+			V(sCola)
+
 			orden[tareaActual] = tareasAtendidas
-			semOrden[tareaActual] = 5	
-			# Se puede esto? Seria atomico porque solo es una asignacion.
-			# Lo que quiero hacer es dejar que pasen los 5 alumnos que estan
-			# esperando su resultado (orden en el que terminaron la tarea).
-			# Sino hago 5 veces V(semOrden[tareaActual]) re villa.
+			for 1 to 5 { V(semOrden[tareaActual]) }
 		}
 	}
 
@@ -156,6 +180,7 @@
 		sem semTareas = 1
 		sem llegue = 1
 		int tareas = T
+		int terminadasTotales = 0
 		array[1..E] terminadas of int
 		array[1..E] arrancar of sem = 0
 
@@ -164,22 +189,27 @@
 		cant++
 		if (cant == E) then for j = 1 to E do V(arrancar[j])
 		V(llegue)
+
 		P(arrancar[i])
+
 		P(semTareas)
 		while (tareas > 0) {
 			tareas--
 			V(semTareas)
+
 			realizar tarea
 			terminadas[i]++
+
 			P(semTareas)
 			terminadasTotales++
 		}
-		if terminadasTotales == E {
+		if terminadasTotales == T {
 			premio = terminadas.max
 			for k = 1 to E do V(terminamos[k])
 		}
 		V(semTareas)
+
 		P(terminamos[k])
-		if (terminadas[i] == premio) then recibirPremio
+		if (terminadas[i] == premio) then recibirPremio()
 	}
 
