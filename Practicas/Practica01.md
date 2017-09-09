@@ -75,7 +75,7 @@
 ### 4. 	Se tiene un curso con 40 alumnos, la maestra entrega una tarea distinta a cada alumno, luego cada alumno realiza su tarea y se la entrega a la maestra para que la corrija, esta revisa la tarea y si está bien le avisa al alumno que puede irse, si la tarea está mal le indica los errores, el alumno corregirá esos errores y volverá a entregarle la tarea a la maestra para que realice la corrección nuevamente, esto se repite hasta que la tarea no tenga errores.
 
 	Var
-		cola porCorregir       #Asumo que encolar y desencolar son atomicas, sino agregaria un semaforo.
+		cola porCorregir    #Asumo que encolar y desencolar son atomicas, sino agregaria un semaforo.
 		int seFueron = 0
 		sem entregados = 0
 		array[1..40] tareaPara of sem = 0
@@ -120,20 +120,20 @@
 						    # los alumnos elijan tarea.
 	
 	Process Alumno[i = 1..50]:: 
-	{	tarea = elegirTarea()				# Cada alumno elije su tarea.
-		V(eligieron)					# Aumento la cantidad de alumnos que ya eligieron.
+	{	tarea = elegirTarea()		# Cada alumno elije su tarea.
+		V(eligieron)			# Aumento la cantidad de alumnos que ya eligieron.
 		if (eligieron == 50) then for i = 1 to 50 do V(arranquen[i]) 
 		# Si eligieron 50, digo que se puede arrancar. Aca tengo que poner semaforo no?
 		P(arranquen[i])			# Espero a que pueda arrancar.
 		Realizo mi tarea.					
 		V(termine[tarea])		# Aumento la cantidad que termino la tarea que tengo asignada.
-		if (termine[tarea] == 5) then 	# Si terminamos 5 de mi tarea: Aca tengo que poner semaforo no???
-			cola.encolar(tarea)		# Encolo la tarea que tengo asignada.
-			V(tareasPorAtender)		# Aumento que hay una mas para atender.
+		if (termine[tarea] == 5) then 	# Si terminamos 5 de mi tarea: Semaforo???
+			cola.encolar(tarea)	# Encolo la tarea que tengo asignada.
+			V(tareasPorAtender)	# Aumento que hay una mas para atender.
 		endif
-		P(semOrden[tarea])			# Espero a que se le asigne un orden a mi tarea.
-		mirarMiOrden(orden[tarea])		# Veo que orden se me asigno.
-		Me voy.					# Bai.
+		P(semOrden[tarea])		# Espero a que se le asigne un orden a mi tarea.
+		mirarMiOrden(orden[tarea])	# Veo que orden se me asigno.
+		Me voy.				# Bai.
 	}
 
 	Process Profesor::
