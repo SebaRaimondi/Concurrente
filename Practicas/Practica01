@@ -31,6 +31,38 @@ b.
 	sem instLibres = 5
 	sem colaLibre = 1
 	Process Operativo[i = 1..N]::
-	{	
-		
+	{	P(instLibres)
+		P(colaLibre)
+		recurso = cola.desencolar
+		V(colaLibre)
+		el proceso usa la instancia del recurso.
+		P(colaLibre)
+		cola.encolar(recurso)
+		V(colaLibre)
+		V(instLibres)
 	}
+
+3.	Suponga que existe una BD que puede ser accedida por 6 usuarios como máximo al mismo
+	tiempo. Además los usuarios se clasifican como usuarios de prioridad alta y usuarios de
+	prioridad baja. Por último la BD tiene la siguiente restricción:
+		• no puede haber más de 4 usuarios con prioridad alta al mismo tiempo usando la BD.
+		• no puede haber más de 5 usuarios con prioridad baja al mismo tiempo usando la BD.
+	Indique si la solución presentada es la más adecuada. Justifique la respuesta.
+
+		Var
+			sem: semaphoro := 6;
+			alta: semaphoro := 4;
+			baja: semaphoro := 5;
+
+		Process Usuario-Alta [I:1..L]::				Process Usuario-Baja [I:1..K]::
+			{ 	P (sem);								{ 	P (sem);
+				P (alta);									P (baja);
+				//usa la BD									//usa la BD
+				V(sem);										V(sem);
+				V(alta);									V(baja);
+			}											}
+
+	No es la forma correcta de declarar semaforos, se declaran con "sem nombreDeSemaforo = valorInicial"
+	Se tiene que hacer P(sem) luego del P(alta/baja), ya que sino podrian pasar el P(sem) 6 prio baja, 
+		cuando solo 5 pasan el P(baja) y no puede ejecutarse ningun prioridad alta
+	
