@@ -6,7 +6,7 @@
 
 a.
 	sem libres = 1
-	Process Detector[1..N]::
+	Process Detector[i = 1..N]::
 	{	llega una persona.
 		P(semaforo)
 		pasa una persona.
@@ -16,10 +16,21 @@ a.
 
 b.
 	sem libres = 3
-	Process Detector[1..N]::
+	Process Detector[i = 1..N]::
 	{	llega una persona.
 		P(semaforo)
 		pasa una persona.
 		V(semaforo)
 		ingresa al avion o le sacan la bomba.
+	}
+
+2.	Un sistema operativo mantiene 5 instancias de un recurso almacenadas en una cola,
+	cuando un proceso necesita usar una instancia del recurso la saca de la cola, la usa y
+	cuando termina de usarla la vuelve a depositar.
+
+	sem instLibres = 5
+	sem colaLibre = 1
+	Process Operativo[i = 1..N]::
+	{	
+		
 	}
