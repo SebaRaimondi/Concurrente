@@ -111,12 +111,13 @@
 ### Nota: Para elegir la tarea suponga que existe una función elegir que le asigna una tarea a un alumno (esta función asignará 10 tareas diferentes entre 50 alumnos, es decir, que 5 alumnos tendrán la tarea 1, otros 5 la tarea 2 y así sucesivamente para las 10 tareas).
 
 	Var
-		sem eligieron = 0			# max 50
-		sem tareasPorAtender = 0		# max 10
-		array[1..10] orden of int		# orden en el que termino cada una de las 10 tareas.
-		array[1..10] termine of sem = 0		# max 5, cantidad de alumnos que termino cada tarea.
-		array[1..10] semOrden of sem = 0	# indica cuando el profesor asigno el orden para mi tarea.
-		array[1..50] arranquen of sem = 0  # las posiciones seran 1 cuando todos los alumnos elijan tarea.
+		sem eligieron = 0		    # max 50
+		sem tareasPorAtender = 0	    # max 10
+		array[1..10] orden of int	    # orden en el que termino cada una de las 10 tareas.
+		array[1..10] termine of sem = 0	    # max 5, cantidad de alumnos que termino cada tarea.
+		array[1..10] semOrden of sem = 0    # indica cuando el profesor asigno el orden para mi tarea.
+		array[1..50] arranquen of sem = 0   # las posiciones seran 1 cuando todos 
+						    # los alumnos elijan tarea.
 	
 	Process Alumno[i = 1..50]:: 
 	{	tarea = elegirTarea()				# Cada alumno elije su tarea.
