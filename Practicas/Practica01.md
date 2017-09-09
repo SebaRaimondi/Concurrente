@@ -213,3 +213,76 @@
 		if (terminadas[i] == premio) then recibirPremio()
 	}
 
+
+### 7. Existe una casa de comida rápida que es atendida por 1 empleado. Cuando una persona llega se pone en la cola y espera a lo sumo 10 minutos a que el empleado lo atienda. Pasado ese tiempo se retira sin realizar la compra.
+
+	wat
+
+
+### 8. Hay una fábrica con M operarios en donde se deben realizar N tareas (siendo M = Nx5). Cada tarea se realiza de a grupos de 5 operarios, ni bien llegan a la fábrica se juntan de a 5 en el orden en que llegaron y cuando se ha formado el grupo se le da la tarea correspondiente empezando de la tarea uno hasta la enésima. Una vez que los operarios del grupo tienen la tarea asignada producen elementos hasta que hayan realizado exactamente X entre los operarios del grupo. Una vez que terminaron de producir los X elementos, se juntan los 5 operarios del grupo y se retiran.
+### Nota: cada operario puede hacer 0, 1 o más elementos de una tarea. El tiempo que cada operario tarda en hacer cada elemento es diferente y random. Maximice la concurrencia. 
+
+	Var
+		int grupoLibre = 1
+		sem sLlegue = 1
+		array[1..N] grupos of int = 0
+		array[1..N] sTareas of sem = 1
+		array[1..N] tareasQueFaltan = X
+		array[1..N] tareasTerminadas = 0
+
+	Process Operario[i = 1..M]::
+	{	P(sLlegue)
+		miGrupo = grupoLibre
+		grupos[miGrupo]++
+		if (grupos[miGrupo] == 5) then for 1 to 5 do { V(arranqueGrupo[miGrupo]); grupoLibre++ }
+		V(sLlegue)
+
+		P(arranqueGrupo[miGrupo])
+		buscarTarea(miGrupo)
+
+		P(sTareas[miGrupo])
+		while (tareasQueFaltan[miGrupo] > 0) do {
+			tareasQueFaltan[miGrupo]--
+			V(sTareas[miGrupo])
+			realizarTarea
+			P(sTareas[miGrupo])
+			tareasTerminadas[miGrupo]++
+		}
+		if (tareasTerminadas[miGrupo] == X) then for 1 to 5 do { P(puedeRetirarse[miGrupo]) }
+		V(sTareas[miGrupo])
+
+		V(puedeRetirarse[miGrupo])
+		meVoy()
+	}
+
+
+### 9. Resolver con SEMÁFOROS el funcionamiento en una fábrica de ventanas con 7 empleados (4 carpinteros, 1 vidriero y 2 armadores) que trabajan de la siguiente manera:
+* Los carpinteros continuamente hacen marcos (cada marco es armando por un único carpintero) y los deja en un depósito con capacidad de almacenar 30 marcos.
+* El vidriero continuamente hace vidrios y los deja en otro depósito con capacidad para 50 vidrios.
+* Los armador continuamente toman un marco y un vidrio de los depósitos correspondientes y arman la ventana (cada ventana es armada por un único armador).
+
+	Var
+		sem lugarMarcos = 30
+		sem cantMarcos = 0
+	Process Carpintero[1..4]::
+	{	while (true) {
+			V(lugarMarcos)
+			producirMarco()
+			P(cantMarcos)
+		}
+	}
+	Process Vidriero::
+	{	while (true) {
+			V(lugarVidrios)
+			producirVidrio()
+			P(cantVidrio)
+		}
+	}
+	Process Armador[1..2]::
+	{	while (true) {
+			V(cantMarcos)
+			V(cantVidrio)
+			armarVentana()
+		}
+	}
+
