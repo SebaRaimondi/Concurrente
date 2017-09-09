@@ -5,7 +5,8 @@
 	b. 	Modifique su solución para el caso que haya tres detectores.
 
 a.
-	sem libres = 1
+	Var
+		sem libres = 1
 	Process Detector[i = 1..N]::
 	{	llega una persona.
 		P(semaforo)
@@ -15,7 +16,8 @@ a.
 	}
 
 b.
-	sem libres = 3
+	Var
+		sem libres = 3
 	Process Detector[i = 1..N]::
 	{	llega una persona.
 		P(semaforo)
@@ -32,13 +34,9 @@ b.
 	sem colaLibre = 1
 	Process Operativo[i = 1..N]::
 	{	P(instLibres)
-		P(colaLibre)
-		recurso = cola.desencolar
-		V(colaLibre)
+		recurso = cola.desencolar			# Necesito semaforo para usar la cola???
 		el proceso usa la instancia del recurso.
-		P(colaLibre)
-		cola.encolar(recurso)
-		V(colaLibre)
+		cola.encolar(recurso)				# Necesito semaforo para usar la cola???
 		V(instLibres)
 	}
 
