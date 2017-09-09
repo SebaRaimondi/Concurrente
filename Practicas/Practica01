@@ -149,3 +149,42 @@ b.
 										# Sino hago 5 veces V(semOrden[tareaActual]) re villa.
 		}
 	}
+
+
+6.	A una empresa llegan E empleados y por día hay T tareas para hacer (T>E), una vez que
+	todos los empleados llegaron empezaran a trabajar. Mientras haya tareas para hacer los
+	empleados tomaran una y la realizarán. Cada empleado puede tardar distinto tiempo en
+	realizar cada tarea. Al finalizar el día se le da un premio al empleado que más tareas
+	realizó.
+
+	Var
+		sem semTareas = 1
+		sem llegue = 1
+		int tareas = T
+		array[1..E] terminadas of int
+		array[1..E] arrancar of sem = 0
+
+	Process Empleado[i = 1..E]::
+	{	P(llegue)
+		cant++
+		if (cant == E) then for j = 1 to E do V(arrancar[j])
+		V(llegue)
+		P(arrancar[i])
+		P(semTareas)
+		while (tareas > 0) {
+			tareas--
+			V(semTareas)
+			realizar tarea
+			terminadas[i]++
+			P(semTareas)
+			terminadasTotales++
+		}
+		if terminadasTotales == E {
+			premio = terminadas.max
+			for k = 1 to E do V(terminamos[k])
+		}
+		V(semTareas)
+		P(terminamos[k])
+		if (terminadas[i] == premio) then recibirPremio
+	}
+
