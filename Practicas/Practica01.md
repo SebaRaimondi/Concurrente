@@ -262,30 +262,30 @@
 * Los armador continuamente toman un marco y un vidrio de los depósitos correspondientes y arman la ventana (cada ventana es armada por un único armador).
 
 ```
-    Var
-        sem lugarMarcos = 30
-        sem cantMarcos = 0
-    Process Carpintero[1..4]::
-    {	while (true) {
-            V(lugarMarcos)
-            producirMarco()
-            P(cantMarcos)
-        }
+Var
+    sem lugarMarcos = 30
+    sem cantMarcos = 0
+Process Carpintero[1..4]::
+{	while (true) {
+        V(lugarMarcos)
+        producirMarco()
+        P(cantMarcos)
     }
-    Process Vidriero::
-    {	while (true) {
-            V(lugarVidrios)
-            producirVidrio()
-            P(cantVidrio)
-        }
+}
+Process Vidriero::
+{	while (true) {
+        V(lugarVidrios)
+        producirVidrio()
+        P(cantVidrio)
     }
-    Process Armador[1..2]::
-    {	while (true) {
-            V(cantMarcos)
-            V(cantVidrio)
-            armarVentana()
-        }
+}
+Process Armador[1..2]::
+{	while (true) {
+        V(cantMarcos)
+        V(cantVidrio)
+        armarVentana()
     }
+}
 ```
 
 ### 10.En un curso hay dos profesores que toman examen en forma oral, el profesor A llama a los alumnos de acuerdo al orden de llegada, mientras que el profesor B llama a cualquier alumno (que haya llegado). Existen N alumnos que llegan y se quedan esperando hasta ser llamados para rendir, luego de que uno de los dos profesores lo atiende, se va. Indicar si la siguiente solución realizada con semáforo resuelve lo pedido. Justificar la respuesta. 
