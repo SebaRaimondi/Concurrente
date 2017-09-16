@@ -265,24 +265,28 @@
 Var
     sem lugarMarcos = 30
     sem cantMarcos = 0
+    sem lugarVidrios = 50
+    sem cantVidrios = 0
 Process Carpintero[1..4]::
 {	while (true) {
-        V(lugarMarcos)
+        P(lugarMarcos)
         producirMarco()
-        P(cantMarcos)
+        V(cantMarcos)
     }
 }
 Process Vidriero::
 {	while (true) {
-        V(lugarVidrios)
+        P(lugarVidrios)
         producirVidrio()
-        P(cantVidrio)
+        V(cantVidrio)
     }
 }
 Process Armador[1..2]::
 {	while (true) {
-        V(cantMarcos)
-        V(cantVidrio)
+        P(cantMarcos)
+        V(lugarMarcos)
+        P(cantVidrio)
+        V(lugarVidrio)
         armarVentana()
     }
 }
