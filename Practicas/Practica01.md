@@ -267,22 +267,22 @@ Var
     sem cantMarcos = 0
     sem lugarVidrios = 50
     sem cantVidrios = 0
-Process Carpintero[1..4]::
-{	while (true) {
+Process Carpintero[1..4]::{
+    while (true) {
         P(lugarMarcos)
         producirMarco()
         V(cantMarcos)
     }
 }
-Process Vidriero::
-{	while (true) {
+Process Vidriero::{
+    while (true) {
         P(lugarVidrios)
         producirVidrio()
         V(cantVidrio)
     }
 }
-Process Armador[1..2]::
-{	while (true) {
+Process Armador[1..2]::{
+    while (true) {
         P(cantMarcos)
         V(lugarMarcos)
         P(cantVidrio)
