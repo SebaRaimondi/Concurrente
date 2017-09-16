@@ -248,10 +248,10 @@
 			P(sTareas[miGrupo])
 			tareasTerminadas[miGrupo]++
 		}
-		if (tareasTerminadas[miGrupo] == X) then for 1 to 5 do { P(puedeRetirarse[miGrupo]) }
+		if (tareasTerminadas[miGrupo] == X) then for 1 to 5 do { V(puedeRetirarse[miGrupo]) }
 		V(sTareas[miGrupo])
 
-		V(puedeRetirarse[miGrupo])
+		P(puedeRetirarse[miGrupo])
 		meVoy()
 	}
 
