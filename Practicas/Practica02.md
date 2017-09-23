@@ -1,6 +1,7 @@
 # Práctica 2 – Semáforos
 
-### 1. 	Existen N personas que deben ser chequeadas por un detector de metales antes de poder ingresar al avión.
+### Ejercicio 1.
+### Existen N personas que deben ser chequeadas por un detector de metales antes de poder ingresar al avión.
 
 #### 	a. 	Implemente una solución que modele el acceso de las personas a un detector (es decir si el detector está libre la persona lo puede utilizar caso contrario debe esperar).
 
