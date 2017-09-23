@@ -212,13 +212,13 @@ Process Empleado [e: 1..50] {
 Monitor Empresa {
     int actual = 1
     int[10] grupos = 0
-    cond[10] llegaronTodosGrupo
+    cond llegaronTodosGrupo
 
     Procedure llegue() {
         grupos[actual]++
-        if (grupos[actual] < 5) wait(llegaronTodosGrupo[actual])
+        if (grupos[actual] < 5) wait(llegaronTodosGrupo)
         else {
-            signal_all(llegaronTodosGrupo[actual])
+            signal_all(llegaronTodosGrupo)
             actual++
         }
     }
