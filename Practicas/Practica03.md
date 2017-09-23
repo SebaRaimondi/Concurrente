@@ -141,6 +141,13 @@ Process Persona [p: 1..100] {
 ### 5. Se tienen 50 empleados de una empresa petrolera que se reúnen para ir en grupos de a 5 a verificar 1 de los 10 pozos de petróleo existentes, cuando los empleados llegan se les asigna un numero de grupo, luego deberán esperar a sus compañeros de grupo para ir a la verificación.
 
 ```
+Process Empleado [e: 1..50] {
+    Empresa.llegue(e)
+}
+
+Monitor Empresa {
+    
+}
 ```
 
 ---
