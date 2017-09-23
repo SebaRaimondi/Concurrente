@@ -137,7 +137,65 @@ Process Persona [p: 1..100] {
 ### Suponga que N personas llegan a la cola de un banco. Una vez que la persona se agrega en la cola no espera más de 15 minutos para su atención, si pasado ese tiempo no fue atendida se retira. Para atender a las personas existen 2 empleados que van atendiendo de a una y por orden de llegada a las personas.
 
 ```
-    No se como hacer esperar por varias condicioens, tipo espera a que lo atiendan o si pasan 15 se va.
+By Borre ft. Seba
+
+Monitor Banco {
+    cond cola
+    array pos[1..N] of cond
+    cola clientes
+    array atendido[1..N] of bool = false
+    int s[1..N] of bool = false
+
+    Procedure esperar (int au) {
+        encolar(clientes, au)
+        wait (cola)
+    }
+
+
+    Procedure atender () {
+        if ( !empty(clientes) ) {
+            aux = desencolar(clientes) 
+            atendido[aux] = true
+            signal(cola)
+        }
+    }
+
+    Procedure irse(int au) {
+        if (!atendido[au]) {
+            desencolar(clientes)
+            signal(cola)
+        }
+    }
+
+    Procedure P (int i) {
+        if (s[i] == false) wait(pos[i])
+    }
+
+    Procedure V (int i) {
+        s[i]=true
+        signal(pos[i])
+    }
+}
+
+
+Process Empleado [e: 1..2] {
+	While(true) {
+		Banco.atender()
+		"Atender Cliente"
+    }
+}
+
+Process Cliente [c: 1..N] {
+    Banco.V(c)
+    Banco.esperar()
+    "Me voy"
+}
+
+Process Timer [t: 1..N] {
+    Banco.P(t)
+    delay (15)
+    Banco.irse(t)
+}
 ```
 
 ---
