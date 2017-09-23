@@ -16,3 +16,13 @@
 ---
 
 ### [Practica 3 - Monitores](Practicas/Practica03.md)
+* [Practica 3 - Monitores - Ejercicio 1](Practicas/Practica03.md#ejercicio-1)
+* [Practica 3 - Monitores - Ejercicio 2](Practicas/Practica03.md#ejercicio-2)
+* [Practica 3 - Monitores - Ejercicio 3](Practicas/Practica03.md#ejercicio-3)
+* [Practica 3 - Monitores - Ejercicio 4](Practicas/Practica03.md#ejercicio-4)
+* [Practica 3 - Monitores - Ejercicio 5](Practicas/Practica03.md#ejercicio-5)
+* [Practica 3 - Monitores - Ejercicio 6](Practicas/Practica03.md#ejercicio-6)
+* [Practica 3 - Monitores - Ejercicio 7](Practicas/Practica03.md#ejercicio-7)
+* [Practica 3 - Monitores - Ejercicio 8](Practicas/Practica03.md#ejercicio-8)
+
+---

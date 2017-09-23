@@ -147,11 +147,23 @@ Process Persona [p: 1..100] {
 
 ```
 Process Empleado [e: 1..50] {
-    Empresa.llegue(e)
+    Empresa.llegue()
+    "Se va a verificar un pozo con su grupo."
 }
 
 Monitor Empresa {
+    int actual = 1
+    int[10] grupos = 0
+    cond[10] llegaronTodosGrupo
 
+    Procedure llegue() {
+        grupos[actual]++
+        if (grupos[actual] < 5) wait(llegaronTodosGrupo[actual])
+        else {
+            signal_all(llegaronTodosGrupo[actual])
+            actual++
+        }
+    }
 }
 ```
 
