@@ -268,83 +268,81 @@ Monitor Entrenamiento {
 ### Resolver la siguiente situación. Suponga una comisión con 50 alumnos. Cuando los alumnos llegan forman una fila, una vez que están los 50 en la fila el jefe de trabajos prácticos les entrega el número de grupo (número aleatorio del 1 al 25) de tal manera que dos alumnos tendrán el mismo número de grupo (suponga que el jefe posee una función DarNumero() que devuelve en forma aleatoria un número del 1 al 25, el jefe de trabajos prácticos no guarda el número que le asigna a cada alumno). Cuando un alumno ha recibido su número de grupo comienza a realizar la práctica. Al terminar de trabajar, el alumno le avisa al jefe de trabajos prácticos y espera la nota. El jefe de trabajos prácticos, cuando han llegado los dos alumnos de un grupo les devuelve a ambos la nota del GRUPO (el primer grupo en terminar tendrá como nota 25, el segundo 24, y así sucesivamente hasta el último que tendrá nota 1).
 
 ```
-Process Alumno[a: 1..50]{
-	Aula.llegoAlumno(a)	// Aviso que llegue.
-	// Hace la practica.
-	Aula.entregar(a)	// Entrega y se queda esperando a que le devuelvan la nota.
+Process Alumno [a: 1..50] {
+	Aula.llegoAlumno(a)	// Aviso que llegue
+	// Hace la practica
+	Aula.entregar(a)	// Entrega y se queda esperando a que le devuelvan la nota
 	Aula.verNota(a)
-	// Se va.
+	// Se va
 }
 
-Process JTP[]{
-	Aula.esperarAlumnos()	// Espero a que lleguen los 50.
-	Aula.darGrupos()	// Le asigno los grupos a los alumnos.
-for i = 25 to 1 do {
-Aula.esperarEntrega()	// Espera que alguien entregue.
-Aula.darCorreccion(i)	// Le dice en qué orden terminó el grupo.
-}
-}
-
-Monitor Aula{
-cond alumnos;
-int s = 0; cond jtp;	// Cantidad de alumnos que llegaron
-int grupos[50]		// Grupo de cada alumno
-int entregas[25] = 0; // Cantidad de entregas por grupo
-queue qAlumnos;	// Alumnos encolados por orden de llegada	
-queue qEntregas;	// Grupos por orden de entrega
-int z = 0;		// Cantidad de entregas por corregir
-int notas[25]		// Notas de cada grupo
-cond waitNotas[25]	// Esperando notas por grupo
-
-procedure esperarAlumnos (){
-	if (s != 50){
-wait(jtp)
-}
+Process JTP [] {
+    Aula.esperarAlumnos()	// Espero a que lleguen los 50
+    Aula.darGrupos()	// Le asigno los grupos a los alumnos
+    for i = 25 to 1 do {
+        Aula.esperarEntrega()	// Espera que alguien entregue
+        Aula.darCorreccion(i)	// Le dice en qué orden terminó el grupo
+    }
 }
 
-procedure llegoAlumno (a){ 
-s = s+1;
-if (s == 50) {
-signal(jtp);
-}
-queue.encolar(a)
-wait(alumnos)
-};
+Monitor Aula {
+    cond alumnos
+    int s = 0               // Cantidad de alumnos que llegaron
+    cond jtp	
+    int grupos[50]		    // Grupo de cada alumno
+    int entregas[25] = 0    // Cantidad de entregas por grupo
+    queue qAlumnos	        // Alumnos encolados por orden de llegada	
+    queue qEntregas	        // Grupos por orden de entrega
+    int z = 0		        // Cantidad de entregas por corregir
+    int notas[25]		    // Notas de cada grupo
+    cond waitNotas[25]	    // Esperando notas por grupo
 
-procedure darGrupos() {
-	for (i=0; i<50; i++){
-		nro = qAlumnos.next
-	grupos[nro] = JTP.DarNumero()
-	signal(alumnos)	// Siempre va a ser el mismo que en queue
-	}
-}
+    procedure esperarAlumnos() {
+        if (s != 50) {
+            wait(jtp)
+        }
+    }
 
-procedure esperarEntrega (){ 
-if (z == 0) wait(jtp);
-z = z-1;
-};
+    procedure llegoAlumno(a) { 
+        s = s+1
+        if (s == 50) signal(jtp)
+        queue.encolar(a)
+        wait(alumnos)
+    }
 
-procedure entregar(int a) { 
-entregas[grupos[a]]++
-if (entregas[grupos[a]] == 2){ 
-z = z+1;
-qEntregas.queue(grupos[a]);
-signal(jtp);
-}
-wait(waitNotas[grupos[a]])
-};
-};
+    procedure darGrupos() {
+        for (i=0; i<50; i++) {
+            nro = qAlumnos.next
+            grupos[nro] = JTP.DarNumero()
+            signal(alumnos)                 // Siempre va a ser el mismo que en queue
+        }
+    }
 
-procedure darCorreción(int nota){
-grupo =	qEntregas.next
-notas[grupo] = nota
-signal_All(waitNotas[grupo])
-}
+    procedure esperarEntrega() { 
+        if (z == 0) wait(jtp)
+        z = z-1
+    }
 
-procedure verNota (int a){
-	return notas[grupos[a]]
+    procedure entregar(int a) { 
+        entregas[grupos[a]]++
+        if (entregas[grupos[a]] == 2) { 
+            z = z+1
+            qEntregas.queue(grupos[a])
+            signal(jtp)
+        }
+        wait(waitNotas[grupos[a]])
+    }
+
+    procedure darCorreción(int nota) {
+        grupo =	qEntregas.next
+        notas[grupo] = nota
+        signal_All(waitNotas[grupo])
+    }
+
+    procedure verNota(int a) {
+        return notas[grupos[a]]
+    }
 }
-end Monitor;
 
 
 ```
