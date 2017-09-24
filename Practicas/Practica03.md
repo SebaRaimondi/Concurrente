@@ -269,38 +269,36 @@ Monitor Entrenamiento {
 
 ```
 Process Alumno [a: 1..50] {
-	Aula.llegoAlumno(a)	// Aviso que llegue
+	Aula.llegoAlumno(a)             // Aviso que llegue
 	// Hace la practica
-	Aula.entregar(a)	// Entrega y se queda esperando a que le devuelvan la nota
+	Aula.entregar(a)                // Entrega y se queda esperando a que le devuelvan la nota
 	Aula.verNota(a)
 	// Se va
 }
 
 Process JTP [] {
-    Aula.esperarAlumnos()	// Espero a que lleguen los 50
-    Aula.darGrupos()	// Le asigno los grupos a los alumnos
+    Aula.esperarAlumnos()           // Espero a que lleguen los 50
+    Aula.darGrupos()                // Le asigno los grupos a los alumnos
     for i = 25 to 1 do {
-        Aula.esperarEntrega()	// Espera que alguien entregue
-        Aula.darCorreccion(i)	// Le dice en qué orden terminó el grupo
+        Aula.esperarEntrega()       // Espera que alguien entregue
+        Aula.darCorreccion(i)       // Le dice en qué orden terminó el grupo
     }
 }
 
 Monitor Aula {
     cond alumnos
-    int s = 0               // Cantidad de alumnos que llegaron
+    int s = 0                       // Cantidad de alumnos que llegaron
     cond jtp	
-    int grupos[50]		    // Grupo de cada alumno
-    int entregas[25] = 0    // Cantidad de entregas por grupo
-    queue qAlumnos	        // Alumnos encolados por orden de llegada	
-    queue qEntregas	        // Grupos por orden de entrega
-    int z = 0		        // Cantidad de entregas por corregir
-    int notas[25]		    // Notas de cada grupo
-    cond waitNotas[25]	    // Esperando notas por grupo
+    int grupos[50]                  // Grupo de cada alumno
+    int entregas[25] = 0            // Cantidad de entregas por grupo
+    queue qAlumnos                  // Alumnos encolados por orden de llegada	
+    queue qEntregas                 // Grupos por orden de entrega
+    int z = 0                       // Cantidad de entregas por corregir
+    int notas[25]                   // Notas de cada grupo
+    cond waitNotas[25]              // Esperando notas por grupo
 
     procedure esperarAlumnos() {
-        if (s != 50) {
-            wait(jtp)
-        }
+        if (s != 50) wait(jtp)
     }
 
     procedure llegoAlumno(a) { 
@@ -314,7 +312,7 @@ Monitor Aula {
         for (i=0; i<50; i++) {
             nro = qAlumnos.next
             grupos[nro] = JTP.DarNumero()
-            signal(alumnos)                 // Siempre va a ser el mismo que en queue
+            signal(alumnos)         // Siempre va a ser el mismo que en queue
         }
     }
 
