@@ -179,9 +179,9 @@ Monitor Banco {
 
 
 Process Empleado [e: 1..2] {
-	While(true) {
-		Banco.atender()
-		"Atender Cliente"
+    While(true) {
+        Banco.atender()
+        "Atender Cliente"
     }
 }
 
@@ -234,18 +234,18 @@ Monitor Empresa {
 Con Borre
 
 Process Jugador [j: 1..20] {
-	equipo = DarEquipo()
-	Entrenamiento.llegue(equipo)
-	delay(50)  // Juega durante 50min
+    equipo = DarEquipo()
+    Entrenamiento.llegue(equipo)
+    delay(50)  // Juega durante 50min
 }
 
 Monitor Entrenamiento {
-	int[4] llegaronEquipo
-	cond[4] equipo
-	queue completos
-	int cancha = 1
+    int[4] llegaronEquipo
+    cond[4] equipo
+    queue completos
+    int cancha = 1
 
-	Procedure llegue(int i) {
+    Procedure llegue(int i) {
         llegaronEquipo[i]++
         if (llegaronEquipo[i] < 5) wait(equipo[i])
         else {
@@ -269,11 +269,11 @@ Monitor Entrenamiento {
 
 ```
 Process Alumno [a: 1..50] {
-	Aula.llegoAlumno(a)             // Aviso que llegue
-	// Hace la practica
-	Aula.entregar(a)                // Entrega y se queda esperando a que le devuelvan la nota
-	Aula.verNota(a)
-	// Se va
+    Aula.llegoAlumno(a)             // Aviso que llegue
+    // Hace la practica
+    Aula.entregar(a)                // Entrega y se queda esperando a que le devuelvan la nota
+    Aula.verNota(a)
+    // Se va
 }
 
 Process JTP [] {
