@@ -354,3 +354,96 @@ Monitor Aula {
 ### Luego de que todas las camisas han sido fabricadas los operarios deben retirarse.
 ### Nota: no se deben fabricar camisas de más. No se puede suponer nada sobre los tiempos, es decir, el tiempo en que un operario tarda en buscar los elementos, ni el tiempo en que tarda un grupo en fabricar una camisa. 
 
+```
+Process Operario [o: 1..40] {
+    Fabrica.informarLlegada(o)          // Aviso que llegue
+    Fabrica.esperarEquipo(o)            // Espero a que llegue mi equipo
+    while (Fabrica.sigoFabricando?(o)) {
+        // Busco materiales hasta que mi equipo tenga 8
+        while (!Fabrica.alcanzanMateriales(o)) buscarMateriales(o) 
+        Fabrica.esperarParaFabricar(o)  // Espero a que este listo mi equipo
+        // Fabrican camisa
+    }
+}
+
+Process Encargado [] {
+    Fabrica.esperarEmpleados()
+    for (int i; i < 40; i++) {
+        Fabrica.darGrupo (i, elegirGrupo())
+    }
+    Fabrica.todosTienenGrupo()
+}
+
+Monitor Fabrica {
+    bool esperando = false
+    bool[1..10] fabricando = false
+    cond encargado
+    cond llegaron
+    cond[1..10] equipo
+    cond[1..10] cParaFabricar
+    int cantOperarios = 0
+    int camisas = 0
+    int[1..10] integrantes = 0
+    int[1..10] materiales = 0
+    int[1..10] aParaFabricar = 0
+    int[1..40] grupoAsignado = 0
+
+    Procedure informarLlegada(int i) {
+        cantOperarios++;
+        if (cantOperarios == 50 and esperando) {
+            signal(encargado) 
+        }
+        wait(llegaron)
+    }
+
+    Procedure esperarEmpleados() {
+        if (cantOperarios < 50) wait(encargado)
+    }
+
+    Procedure darGrupo(int empleado, int grupo) {
+        grupoAsignado[empleado] = grupo;
+    }
+
+    Procedure todosTienenGrupo {
+        signal_all(llegaron)
+    }
+
+    Procedure esperarEquipo(int i){
+        integrantes[grupoAsignado[i]]++;
+        if (integrantes[grupoAsignado[i]] == 4) {
+            signalAll(equipo[i])
+        }
+        else {
+            wait(equipo[i])
+        }
+    }
+
+    Procedure alcanzanMateriales(int ope) {
+        return materiales[grupoAsignado[ope]] >= 8
+    }
+
+    Procedure buscarMateriales(int ope) {
+        materiales[grupoAsignado[ope]]++
+    }
+
+    Procedure esperarParaFabricar(int ope) {
+        aParaFabricar[grupoAsignado[ope]]++
+        if (aParaFabricar[grupoAsignado[ope]] == 8) {
+            aParaFabricar[grupoAsignado[ope]] = 0
+            materiales[grupoAsignado[ope]] = 0
+            signal_all(cParaFabricar[ope])
+        }
+        else wait(cParaFabricar[ope])
+    }
+
+    Procedure sigoFabricando?(int ope) {
+        if (fabricando[grupo(ope)]) return true
+        if (camisas < 5000) {
+            fabricando[grupo(ope)] = true
+            camisas++
+            return true
+        }
+        return false
+    }
+}
+```
